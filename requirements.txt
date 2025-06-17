@@ -1,0 +1,9 @@
+streamlit
+opencv-python
+numpy
+Pillow
+pyttsx3
+gtts
+tensorflow         # If you're using TensorFlow-based models
+torch              # If you're using PyTorch (e.g. YOLOv5)
+ultralytics        # If you're using YOLOv8
