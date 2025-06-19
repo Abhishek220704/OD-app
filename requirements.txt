@@ -1,6 +1,6 @@
 streamlit
 opencv-python
-numpy
-Pillow
+ultralytics
 pyttsx3
-gdown
+Pillow
+numpy
