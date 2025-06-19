@@ -6,20 +6,24 @@ from PIL import Image
 from pathlib import Path
 import platform
 
+# ✅ Streamlit setup
 st.set_page_config(page_title="Real-Time Object Detection", layout="centered")
-st.title("📸 Real-Time Object Detection with Voice")
+st.title("📸 Real-Time Object Detection with Voice Output")
 
-# ✅ Conditionally import voice engine only for local use
-if platform.system() != "Linux" or "streamlit" not in st.runtime.scriptrunner.get_script_run_ctx().runtime:
-    import pyttsx3
-    voice_enabled = True
-    engine = pyttsx3.init()
-    engine.setProperty('rate', 150)
+# ✅ Voice engine (local use only)
+voice_enabled = False
+if platform.system() != "Linux":
+    try:
+        import pyttsx3
+        engine = pyttsx3.init()
+        engine.setProperty('rate', 150)
+        voice_enabled = True
+    except Exception as e:
+        st.warning(f"Voice engine error: {e}")
 else:
-    st.warning("Voice output is disabled on Streamlit Cloud.")
-    voice_enabled = False
+    st.warning("🔇 Voice output is disabled on Streamlit Cloud.")
 
-# ✅ Load or download YOLO model
+# ✅ Load or download YOLOv8 model
 @st.cache_resource
 def load_model():
     model_path = Path("yolov8n.pt")
@@ -43,6 +47,7 @@ if run:
     while run:
         ret, frame = cap.read()
         if not ret:
+            st.error("Failed to access webcam.")
             break
 
         results = model(frame)[0]
@@ -54,7 +59,7 @@ if run:
             label = model.names[cls_id]
             labels_in_frame.add(label)
 
-        # ✅ Speak new labels (only locally)
+        # ✅ Speak newly detected labels
         new_labels = labels_in_frame - detected_labels
         if voice_enabled:
             for label in new_labels:
