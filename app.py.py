@@ -1,13 +1,21 @@
 import streamlit as st
 import os
-import urllib.request
+import gdown  # ✅ Google Drive downloader
 
-# Download yolov3.weights if not already present
+# Google Drive direct download URL (public file)
+weights_url = "https://drive.google.com/uc?id=1MPzq3LQ7Hy2Nkv7p9akIFZi7tvkKZdbU"
+
+# Check and download yolov3.weights
 if not os.path.exists("yolov3.weights"):
-    with st.spinner("Downloading YOLOv3 weights..."):
-        url = "https://pjreddie.com/media/files/yolov3.weights"
-        urllib.request.urlretrieve(url, "yolov3.weights")
-        st.success("YOLOv3 weights downloaded successfully!")
+    with st.spinner("Downloading yolov3.weights from Google Drive..."):
+        try:
+            import gdown
+        except ImportError:
+            st.error("Please add 'gdown' to your requirements.txt")
+            raise
+
+        gdown.download(weights_url, "yolov3.weights", quiet=False)
+        st.success("✅ Download complete!")
 
 
 import cv2
