@@ -1,101 +1,57 @@
 import streamlit as st
-import os
-import gdown  # ✅ Google Drive downloader
-
-# Google Drive direct download URL (public file)
-weights_url = "https://drive.google.com/uc?id=1MPzq3LQ7Hy2Nkv7p9akIFZi7tvkKZdbU"
-
-# Check and download yolov3.weights
-if not os.path.exists("yolov3.weights"):
-    with st.spinner("Downloading yolov3.weights from Google Drive..."):
-        try:
-            import gdown
-        except ImportError:
-            st.error("Please add 'gdown' to your requirements.txt")
-            raise
-
-        gdown.download(weights_url, "yolov3.weights", quiet=False)
-        st.success("✅ Download complete!")
-
-
 import cv2
 import numpy as np
 import pyttsx3
+from ultralytics import YOLO
 from PIL import Image
 
-# Initialize TTS engine
+st.set_page_config(page_title="Real-Time Object Detection", layout="centered")
+st.title("📸 Real-Time Object Detection with Voice")
+
+# Load model
+@st.cache_resource
+def load_model():
+    return YOLO("model.pt")  # Make sure model.pt is in the same folder
+
+model = load_model()
+
+# Initialize voice engine
 engine = pyttsx3.init()
-
-# Load YOLOv3 model
-net = cv2.dnn.readNet("yolov3.weights", "yolov3.cfg")
-with open("coco.names", "r") as f:
-    classes = [line.strip() for line in f.readlines()]
-layer_names = net.getLayerNames()
-output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers().flatten()]
-
-# Streamlit UI
-st.title("🧠 Real-Time Object Detection with YOLOv3 + Voice")
-run = st.checkbox('Start Camera')
-FRAME_WINDOW = st.image([])
+engine.setProperty('rate', 150)
 
 # Start webcam
-cap = cv2.VideoCapture(0)
-spoken_labels = set()
+run = st.checkbox("Start Camera")
 
-while run:
-    ret, frame = cap.read()
-    if not ret:
-        st.warning("❌ Unable to access webcam")
-        break
+FRAME_WINDOW = st.image([])
 
-    height, width, _ = frame.shape
+if run:
+    cap = cv2.VideoCapture(0)
+    detected_labels = set()
 
-    # Convert to blob for YOLO
-    blob = cv2.dnn.blobFromImage(frame, 1/255.0, (416, 416), swapRB=True, crop=False)
-    net.setInput(blob)
-    outs = net.forward(output_layers)
+    while run:
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-    boxes = []
-    confidences = []
-    class_ids = []
+        results = model(frame)[0]
+        annotated_frame = results.plot()
 
-    for out in outs:
-        for detection in out:
-            scores = detection[5:]
-            class_id = np.argmax(scores)
-            confidence = scores[class_id]
-            if confidence > 0.5:
-                # Object detected
-                center_x = int(detection[0] * width)
-                center_y = int(detection[1] * height)
-                w = int(detection[2] * width)
-                h = int(detection[3] * height)
-                x = int(center_x - w / 2)
-                y = int(center_y - h / 2)
+        labels_in_frame = set()
+        for box in results.boxes:
+            cls_id = int(box.cls[0])
+            label = model.names[cls_id]
+            labels_in_frame.add(label)
 
-                boxes.append([x, y, w, h])
-                confidences.append(float(confidence))
-                class_ids.append(class_id)
-
-    indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-
-    for i in indexes.flatten():
-        x, y, w, h = boxes[i]
-        label = str(classes[class_ids[i]])
-        confidence = confidences[i]
-        color = (0, 255, 0)
-        cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-        cv2.putText(frame, f"{label} {int(confidence*100)}%", (x, y - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-
-        # Voice output once per label
-        if label not in spoken_labels:
-            spoken_labels.add(label)
+        # Speak only new labels
+        new_labels = labels_in_frame - detected_labels
+        for label in new_labels:
             engine.say(f"{label} detected")
             engine.runAndWait()
+        detected_labels = labels_in_frame
 
-    FRAME_WINDOW.image(frame, channels="BGR")
+        FRAME_WINDOW.image(annotated_frame, channels="BGR")
 
-else:
     cap.release()
-    st.write("⛔ Camera stopped.")
+else:
+    st.write("Click the checkbox to start camera.")
+
