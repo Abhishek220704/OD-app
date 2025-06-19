@@ -1,3 +1,4 @@
+import streamlit as st
 import os
 import urllib.request
 
@@ -8,7 +9,7 @@ if not os.path.exists("yolov3.weights"):
         urllib.request.urlretrieve(url, "yolov3.weights")
         st.success("YOLOv3 weights downloaded successfully!")
 
-import streamlit as st
+
 import cv2
 import numpy as np
 import pyttsx3
