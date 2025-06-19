@@ -256,7 +256,7 @@ else:
 # In[16]:
 
 
-pip install opencv-python torch torchvision ultralytics
+#pip install opencv-python torch torchvision ultralytics
 
 
 # In[17]:
