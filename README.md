@@ -51,12 +51,15 @@ Pillow
 ```
 
 ## To install:  
-`pip install -r requirements.txt`
+```
+pip install -r requirements.txt
+```
 
 How to run the application locally:  
 1. Ensure `app.py`, `yolov8n.pt`, and `abhishek.jpeg` are in the same folder.  
-2. Run: `streamlit run app.py`  
-3. Make sure your webcam is accessible and not used by another app.
+2. Run:
+```streamlit run app.py```  
+4. Make sure your webcam is accessible and not used by another app.
 
 **Conditions for Best Performance**:  
 Run the application in a well-lit environment. Detection accuracy may reduce in low light or motion blur. Python 3.8+ is recommended.
