@@ -48,9 +48,9 @@ ultralytics
 numpy
 pyttsx3
 Pillow
+```
 
-
-To install:  
+## To install:  
 `pip install -r requirements.txt`
 
 How to run the application locally:  
@@ -62,6 +62,7 @@ How to run the application locally:
 Run the application in a well-lit environment. Detection accuracy may reduce in low light or motion blur. Python 3.8+ is recommended.
 
 Folder structure:
+```
 real-time-object-detection/
 ├── app.py
 ├── requirements.txt
@@ -71,7 +72,7 @@ real-time-object-detection/
 └── assets/
 ├── sample1.jpg
 └── sample2.jpg
-
+```
 
 ---
 
