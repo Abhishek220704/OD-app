@@ -25,7 +25,10 @@ This application utilizes:
 - ⚙️ Start/Stop camera functionality via UI
 
 ---
+📓 For a fully working version with continuous voice output (frame-by-frame), you can also run the Jupyter Notebook file:  
+**Jupyter: `jupiter notebook/jn full code file.ipynb`**
 
+---
 ## 🖼️ Sample Results
 
 > Below are some real-time detection screenshots generated using this application:
