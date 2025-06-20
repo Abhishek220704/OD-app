@@ -30,9 +30,9 @@ This application utilizes:
 
 > Below are some real-time detection screenshots generated using this application:
 
-![Sample 1](assets/ss1.jpg)  
-![Sample 2](assets/ss3.jpg)
-![Sample 2](assets/ss4.jpg)
+![Sample 1](assets/ss1.png)  
+![Sample 2](assets/ss3.png)
+![Sample 2](assets/ss4.png)
 
 Make sure these files (`sample1.jpg`, `sample2.jpg`) are placed inside a folder named `assets/` in your project directory.
 
